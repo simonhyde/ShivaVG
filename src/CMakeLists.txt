@@ -34,8 +34,11 @@ set(libOpenVG_HEADERS
 add_definitions(-DHAVE_CONFIG_H)
 # include_directories(${OPENGL_INCLUDE_DIR})
 # TODO what if OpenGL library has nonstandard location?
-add_library(OpenVG SHARED ${libOpenVG_SOURCES})
+add_library(OpenVG_objlib OBJECT ${libOpenVG_SOURCES})
+set_property(TARGET OpenVG_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(OpenVG SHARED $<TARGET_OBJECTS:OpenVG_objlib>)
+add_library(OpenVGStatic STATIC $<TARGET_OBJECTS:OpenVG_objlib>)
 target_link_libraries(OpenVG ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} -lm) #TODO se funziona bisogna fare in modo che venga aggiunta solo per SO diversi da Windows
-SET_TARGET_PROPERTIES( OpenVG PROPERTIES COMPILE_FLAGS -fPIC)
+target_link_libraries(OpenVGStatic ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} -lm) #TODO se funziona bisogna fare in modo che venga aggiunta solo per SO diversi da Windows
 
 install(TARGETS OpenVG DESTINATION lib)
